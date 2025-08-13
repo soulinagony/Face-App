@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-slate-50 text-gray-800 min-h-screen;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  }
+  
+  h1, h2, h3 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium 
+           transform hover:scale-105 hover:shadow-lg transition-all duration-200;
+  }
+  
+  .btn-accent {
+    @apply bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-xl font-medium 
+           transform hover:scale-105 hover:shadow-lg transition-all duration-200;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white 
+           px-6 py-3 rounded-xl font-medium transform hover:scale-105 transition-all duration-200;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 
+           focus:border-transparent outline-none transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-white p-6 rounded-2xl shadow-sm border border-gray-100 
+           hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300;
+  }
+  
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-lg p-6 rounded-2xl border border-gray-200 
+           shadow-xl transform hover:-translate-y-1 transition-all duration-300;
+  }
+  
+  .streak-indicator {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium 
+           bg-red-100 text-red-600 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200;
+  }
+  
+  .floating-action {
+    @apply fixed bottom-24 right-6 w-16 h-16 bg-indigo-600 hover:bg-indigo-700 rounded-full shadow-2xl 
+           flex items-center justify-center text-white text-2xl 
+           hover:scale-110 transform transition-all duration-200 z-50;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent;
+  }
+  
+  .daily-streak {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full 
+           bg-gradient-to-r from-amber-500 to-red-500 text-white text-sm font-medium shadow-lg hover:shadow-xl 
+           transform hover:scale-105 transition-all duration-200;
+  }
+  
+  .level-badge {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full 
+           bg-gradient-to-r from-yellow-400 to-amber-500 text-white text-sm font-medium shadow-lg hover:shadow-xl 
+           transform hover:scale-105 transition-all duration-200;
+  }
+  
+  .exercise-preview {
+    @apply relative overflow-hidden rounded-2xl border border-purple-200 
+           bg-gradient-to-br from-purple-50 to-pink-50
+           hover:border-purple-300 transition-all duration-300;
+  }
+  
+  .pulse-animation {
+    animation: pulse 2s infinite;
+  }
+  
+  .bounce-animation {
+    animation: bounce 1s infinite;
+  }
+  
+  .slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+  40%, 43% { transform: translateY(-10px); }
+  70% { transform: translateY(-5px); }
+  90% { transform: translateY(-2px); }
+}
