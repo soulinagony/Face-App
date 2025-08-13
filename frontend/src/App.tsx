@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
+import { useTheme } from './hooks/useTheme'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Exercises from './pages/Exercises'
@@ -8,8 +9,8 @@ import Progress from './pages/Progress'
 import Profile from './pages/Profile'
 import './index.css'
 
-// Компонент для защищенных роутов
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// Компонент для защищенных маршрутов
+const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuthStore()
   
   if (isLoading) {
@@ -27,14 +28,16 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 }
 
 // Компонент для редиректа с авторизованных страниц
-const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuthStore()
-  
   return isAuthenticated ? <Navigate to="/" replace /> : <>{children}</>
 }
 
 function App() {
   const { checkAuth, isAuthenticated } = useAuthStore()
+  
+  // Применяем тему
+  useTheme()
 
   useEffect(() => {
     // Проверяем авторизацию при загрузке приложения
@@ -45,54 +48,16 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen">
+      <div className="App">
         <Routes>
           {/* Страница авторизации */}
-          <Route 
-            path="/auth" 
-            element={
-              <AuthRoute>
-                <Auth />
-              </AuthRoute>
-            } 
-          />
+          <Route path="/auth" element={<GuestRoute><Auth /></GuestRoute>} />
           
           {/* Защищенные страницы */}
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/exercises" 
-            element={
-              <ProtectedRoute>
-                <Exercises />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/progress" 
-            element={
-              <ProtectedRoute>
-                <Progress />
-              </ProtectedRoute>
-            } 
-          />
-          
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
+          <Route path="/" element={<AuthRoute><Dashboard /></AuthRoute>} />
+          <Route path="/exercises" element={<AuthRoute><Exercises /></AuthRoute>} />
+          <Route path="/progress" element={<AuthRoute><Progress /></AuthRoute>} />
+          <Route path="/profile" element={<AuthRoute><Profile /></AuthRoute>} />
           
           {/* Редирект на главную для всех остальных путей */}
           <Route path="*" element={<Navigate to="/" replace />} />

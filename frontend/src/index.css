@@ -4,18 +4,69 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #e2e8f0;
+    --bg-tertiary: #cbd5e1;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --page-bg: #f8fafc;
+  }
+
+  [data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --card-bg: #1e293b;
+    --card-border: #334155;
+    --page-bg: #0f172a;
+  }
+
   html {
     font-family: 'Inter', sans-serif;
     scroll-behavior: smooth;
   }
   
   body {
-    @apply bg-slate-50 text-gray-800 min-h-screen;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+    @apply min-h-screen;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+    color: var(--text-primary);
+  }
+  
+  /* Применяем тему ко всем страницам */
+  .min-h-screen {
+    background: var(--page-bg);
+    color: var(--text-primary);
+  }
+  
+  /* Применяем тему к карточкам */
+  .bg-white {
+    background-color: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-primary) !important;
+  }
+  
+  /* Применяем тему к тексту */
+  .text-gray-800, .text-gray-700, .text-gray-600 {
+    color: var(--text-primary) !important;
+  }
+  
+  .text-gray-500 {
+    color: var(--text-secondary) !important;
+  }
+  
+  /* Применяем тему к фону страниц */
+  .bg-gray-50 {
+    background-color: var(--page-bg) !important;
   }
   
   h1, h2, h3 {
     font-family: 'Poppins', sans-serif;
+    color: var(--text-primary);
   }
 }
 

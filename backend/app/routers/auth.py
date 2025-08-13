@@ -12,7 +12,6 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 # Dependency
-
 def get_db():
     db = SessionLocal()
     try:
@@ -33,21 +32,21 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = auth.get_user_by_email(db, email=email)
+    user = auth.get_user(db, email=email)
     if user is None:
         raise credentials_exception
     return user
 
 @router.post("/register", response_model=UserRead)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = auth.get_user_by_email(db, email=user.email)
+    db_user = auth.get_user(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return auth.create_user(db, user)
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = auth.get_user_by_email(db, email=form_data.username)
+    user = auth.get_user(db, email=form_data.username)
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     access_token = auth.create_access_token(data={"sub": user.email})

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, exercises, progress
+from app.routers import auth, exercises, user_stats
 
 app = FastAPI(title="FaceFit API", description="API для приложения упражнений для лица", version="1.0.0")
 
@@ -15,7 +15,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(exercises.router)
-app.include_router(progress.router)
+app.include_router(user_stats.router)
 
 @app.get("/")
 def root():

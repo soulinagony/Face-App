@@ -1,169 +1,239 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useStatsStore } from '../store/statsStore'
+import Card from '../components/Card'
+import Button from '../components/Button'
+import Header from '../components/Header'
+import BottomNavigation from '../components/BottomNavigation'
 
 const Progress: React.FC = () => {
   const navigate = useNavigate()
+  const { stats, fetchStats, isLoading } = useStatsStore()
 
-  const stats = [
-    { label: 'Дней подряд', value: '5', color: 'text-orange-600', icon: '🔥' },
-    { label: 'Всего упражнений', value: '15', color: 'text-green-600', icon: '💪' },
-    { label: 'Очков XP', value: '850', color: 'text-purple-600', icon: '⭐' },
-    { label: 'Время тренировок', value: '2ч 30м', color: 'text-blue-600', icon: '⏱️' }
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
+
+  // Если статистика загружается, показываем загрузку
+  if (isLoading || !stats) {
+    return (
+      <div className="min-h-screen pb-20" style={{ backgroundColor: 'var(--page-bg)' }}>
+        <Header title="Прогресс" />
+        <div className="max-w-md mx-auto p-4 space-y-6">
+          <Card className="text-center p-8">
+            <div className="text-2xl mb-4">⏳</div>
+            <p style={{ color: 'var(--text-secondary)' }}>Загружаем статистику...</p>
+          </Card>
+        </div>
+        <BottomNavigation />
+      </div>
+    )
+  }
+
+  const statsData = [
+    { icon: '📊', label: 'Всего упражнений', value: stats.total_exercises_completed.toString(), color: 'from-blue-500 to-indigo-600' },
+    { icon: '⏱️', label: 'Время тренировок', value: `${Math.floor(stats.total_workout_time_minutes / 60)}ч ${stats.total_workout_time_minutes % 60}м`, color: 'from-green-500 to-emerald-600' },
+    { icon: '🔥', label: 'Лучшая серия', value: `${stats.best_streak_days} дней`, color: 'from-orange-500 to-red-600' },
+    { icon: '⭐', label: 'Уровень', value: `Уровень ${stats.level}`, color: 'from-purple-500 to-pink-600' }
   ]
 
-  const weekData = [
-    { day: 'Пн', completed: true, exercises: 3 },
-    { day: 'Вт', completed: true, exercises: 2 },
-    { day: 'Ср', completed: false, exercises: 0 },
-    { day: 'Чт', completed: true, exercises: 4 },
-    { day: 'Пт', completed: true, exercises: 2 },
-    { day: 'Сб', completed: false, exercises: 0 },
-    { day: 'Вс', completed: true, exercises: 1 }
+  const weeklyData = [
+    { day: 'Пн', exercises: Math.min(stats.exercises_completed_today, 3), time: Math.min(stats.workout_time_today_minutes, 15), color: 'bg-indigo-500' },
+    { day: 'Вт', exercises: Math.min(stats.exercises_completed_today, 5), time: Math.min(stats.workout_time_today_minutes, 25), color: 'bg-indigo-500' },
+    { day: 'Ср', exercises: Math.min(stats.exercises_completed_today, 2), time: Math.min(stats.workout_time_today_minutes, 10), color: 'bg-gray-400' },
+    { day: 'Чт', exercises: Math.min(stats.exercises_completed_today, 4), time: Math.min(stats.workout_time_today_minutes, 20), color: 'bg-indigo-500' },
+    { day: 'Пт', exercises: Math.min(stats.exercises_completed_today, 6), time: Math.min(stats.workout_time_today_minutes, 30), color: 'bg-indigo-500' },
+    { day: 'Сб', exercises: Math.min(stats.exercises_completed_today, 3), time: Math.min(stats.workout_time_today_minutes, 15), color: 'bg-indigo-500' },
+    { day: 'Вс', exercises: 0, time: 0, color: 'bg-gray-400' }
   ]
 
   const achievements = [
-    { title: 'Первые шаги', description: 'Завершите первое упражнение', earned: true },
-    { title: 'Постоянство', description: '5 дней подряд', earned: true },
-    { title: 'Марафонец', description: '30 дней подряд', earned: false },
-    { title: 'Мастер лица', description: 'Завершите все упражнения', earned: false }
+    { icon: '🏆', title: 'Первая тренировка', description: 'Завершили первое упражнение', unlocked: stats.total_exercises_completed > 0 },
+    { icon: '🔥', title: 'Серия 5 дней', description: 'Тренировались 5 дней подряд', unlocked: stats.best_streak_days >= 5 },
+    { icon: '⭐', title: 'Уровень 2', description: 'Достигли второго уровня', unlocked: stats.level >= 2 },
+    { icon: '💪', title: '100 упражнений', description: 'Завершили 100 упражнений', unlocked: stats.total_exercises_completed >= 100 }
   ]
 
+  // Вычисляем процент выполнения дневной цели
+  const dailyGoal = 5 // Цель: 5 упражнений в день
+  const dailyProgress = Math.min(Math.round((stats.exercises_completed_today / dailyGoal) * 100), 100)
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-md mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-800">Прогресс</h1>
-            <button 
-              onClick={() => navigate('/profile')}
-              className="w-10 h-10 bg-gray-500 rounded-xl flex items-center justify-center text-white text-sm font-medium hover:scale-110 transition-transform cursor-pointer hover:bg-indigo-600"
-              title="Профиль"
-            >
-              👤
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen pb-20" style={{ backgroundColor: 'var(--page-bg)' }}>
+      <Header title="Прогресс" />
 
       <div className="max-w-md mx-auto p-4 space-y-6">
-        {/* Stats Grid */}
+        {/* Stats Overview */}
         <div className="grid grid-cols-2 gap-4">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-              <div className="text-2xl mb-2">{stat.icon}</div>
-              <div className={`text-2xl font-bold ${stat.color} mb-1`}>
-                {stat.value}
-              </div>
-              <div className="text-gray-600 text-sm">
-                {stat.label}
-              </div>
-            </div>
+          {statsData.map((stat, index) => (
+            <Card key={index} className={`bg-gradient-to-r ${stat.color} text-white text-center`}>
+              <div className="text-3xl mb-2">{stat.icon}</div>
+              <div className="text-lg font-bold mb-1">{stat.value}</div>
+              <div className="text-xs opacity-90">{stat.label}</div>
+            </Card>
           ))}
         </div>
 
         {/* Weekly Activity */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">Активность за неделю</h3>
-          <div className="flex justify-between items-end space-x-2">
-            {weekData.map((day, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2">
-                <div 
-                  className={`w-8 h-${Math.max(8, day.exercises * 2 + 8)} rounded-t transition-all ${
-                    day.completed ? 'bg-indigo-500' : 'bg-gray-200'
-                  }`}
-                  style={{ height: `${Math.max(32, day.exercises * 8 + 32)}px` }}
-                ></div>
-                <span className="text-xs text-gray-600">{day.day}</span>
+        <Card className="border-l-4 border-l-indigo-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#6366f1'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>📅</span>
+            Активность за неделю
+          </h3>
+          <div className="space-y-3">
+            {weeklyData.map((day, index) => (
+              <div key={index} className="flex items-center justify-between p-3 rounded-lg shadow-sm" style={{ 
+                backgroundColor: 'var(--card-bg)',
+                border: '1px solid var(--card-border)'
+              }}>
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm font-medium w-8" style={{ color: 'var(--text-secondary)' }}>{day.day}</span>
+                  <div className={`w-3 h-3 rounded-full ${day.color}`}></div>
+                </div>
+                <div className="flex items-center space-x-4 text-sm">
+                  <span style={{ color: 'var(--text-secondary)' }}>{day.exercises} упр.</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>{day.time} мин</span>
+                </div>
               </div>
             ))}
           </div>
-          <div className="mt-4 text-center text-sm text-gray-500">
-            Высота столбцов показывает количество выполненных упражнений
-          </div>
-        </div>
+        </Card>
 
         {/* Achievements */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">🏆 Достижения</h3>
+        <Card className="border-l-4 border-l-yellow-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#eab308'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>🏆</span>
+            Достижения
+          </h3>
           <div className="space-y-3">
             {achievements.map((achievement, index) => (
               <div key={index} className={`flex items-center space-x-3 p-3 rounded-lg ${
-                achievement.earned ? 'bg-green-50' : 'bg-gray-50'
-              }`}>
-                <div className={`text-xl ${achievement.earned ? '' : 'grayscale opacity-50'}`}>
-                  {achievement.earned ? '✅' : '🔒'}
+                achievement.unlocked ? 'shadow-sm' : 'opacity-60'
+              }`} style={{ 
+                backgroundColor: achievement.unlocked ? 'var(--card-bg)' : 'var(--bg-secondary)',
+                border: achievement.unlocked ? '1px solid var(--card-border)' : 'none'
+              }}>
+                <div className={`text-2xl ${achievement.unlocked ? '' : 'grayscale'}`}>
+                  {achievement.icon}
                 </div>
                 <div className="flex-1">
-                  <h4 className={`font-medium ${achievement.earned ? 'text-green-800' : 'text-gray-600'}`}>
+                  <h4 className="font-medium" style={{ 
+                    color: achievement.unlocked ? 'var(--text-primary)' : 'var(--text-secondary)'
+                  }}>
                     {achievement.title}
                   </h4>
-                  <p className={`text-sm ${achievement.earned ? 'text-green-600' : 'text-gray-500'}`}>
+                  <p className="text-sm" style={{ 
+                    color: achievement.unlocked ? 'var(--text-secondary)' : 'var(--text-secondary)'
+                  }}>
                     {achievement.description}
                   </p>
                 </div>
+                {achievement.unlocked && (
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Monthly Goal */}
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-6">
-          <h3 className="font-semibold mb-2">🎯 Цель месяца</h3>
-          <p className="text-purple-100 text-sm mb-4">Выполните 50 упражнений до конца месяца</p>
-          <div className="w-full bg-purple-400 rounded-full h-3 mb-2">
-            <div className="bg-white h-3 rounded-full" style={{ width: '30%' }}></div>
+        <Card className="border-l-4 border-l-green-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#10b981'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>🎯</span>
+            Цель месяца
+          </h3>
+          <div className="text-center mb-4">
+            <div className="text-3xl font-bold text-green-600 mb-2">{dailyProgress}%</div>
+            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Выполнено {stats.exercises_completed_today} из {dailyGoal} упражнений сегодня</div>
           </div>
-          <div className="flex justify-between text-sm text-purple-100">
-            <span>15 / 50 упражнений</span>
-            <span>30%</span>
+          <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+            <div className="bg-green-500 h-3 rounded-full transition-all duration-1000" style={{ width: `${dailyProgress}%` }}></div>
           </div>
-        </div>
+          <div className="text-center">
+            {stats.exercises_completed_today >= dailyGoal ? (
+              <p className="text-sm text-green-600 mb-3 font-medium">🎉 Цель дня достигнута! Отличная работа!</p>
+            ) : (
+              <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>Осталось {dailyGoal - stats.exercises_completed_today} упражнений для достижения цели!</p>
+            )}
+            <Button 
+              onClick={() => navigate('/exercises')}
+              variant="primary"
+              size="sm"
+              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+            >
+              🚀 Тренироваться
+            </Button>
+          </div>
+        </Card>
 
         {/* Personal Records */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">📈 Личные рекорды</h3>
+        <Card className="border-l-4 border-l-purple-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#8b5cf6'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>📈</span>
+            Личные рекорды
+          </h3>
           <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Самая длинная серия</span>
-              <span className="font-semibold text-orange-600">7 дней</span>
+            <div className="flex items-center justify-between p-3 rounded-lg shadow-sm" style={{ 
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid var(--card-border)'
+            }}>
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">🔥</span>
+                <span style={{ color: 'var(--text-primary)' }}>Самая длинная серия</span>
+              </div>
+              <span className="text-lg font-bold text-purple-600">{stats.best_streak_days} дней</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Упражнений за день</span>
-              <span className="font-semibold text-green-600">8 упражнений</span>
+            <div className="flex items-center justify-between p-3 rounded-lg shadow-sm" style={{ 
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid var(--card-border)'
+            }}>
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">⏱️</span>
+                <span style={{ color: 'var(--text-primary)' }}>Самая долгая тренировка</span>
+              </div>
+              <span className="text-lg font-bold text-purple-600">{stats.workout_time_today_minutes} мин</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Время тренировки</span>
-              <span className="font-semibold text-blue-600">15 минут</span>
+            <div className="flex items-center justify-between p-3 rounded-lg shadow-sm" style={{ 
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid var(--card-border)'
+            }}>
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">💪</span>
+                <span style={{ color: 'var(--text-primary)' }}>Больше всего упражнений</span>
+              </div>
+              <span className="text-lg font-bold text-purple-600">{stats.exercises_completed_today} упр.</span>
             </div>
           </div>
-        </div>
+        </Card>
+
+        {/* Motivation */}
+        <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white text-center overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white bg-opacity-10 rounded-full -translate-y-12 translate-x-12"></div>
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-white bg-opacity-10 rounded-full translate-y-10 -translate-x-10"></div>
+          <div className="relative z-10">
+            <div className="text-3xl mb-2">🌟</div>
+            <p className="text-sm font-medium">
+              "Каждый день - новая возможность стать лучше"
+            </p>
+          </div>
+        </Card>
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-3 z-50">
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-around">
-            {[
-              { icon: '🏠', label: 'Домой', path: '/' },
-              { icon: '📊', label: 'Прогресс', path: '/progress', active: true },
-              { icon: '📋', label: 'Упражнения', path: '/exercises' },
-              { icon: '👤', label: 'Профиль', path: '/profile' }
-            ].map((item, index) => (
-              <button 
-                key={index}
-                onClick={() => navigate(item.path)}
-                className={`flex flex-col items-center py-2 px-4 rounded-xl transition-all duration-200 ${
-                  item.active ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'
-                }`}
-              >
-                <div className="text-xl mb-1">{item.icon}</div>
-                <span className="text-xs font-medium">{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </nav>
+      <BottomNavigation />
     </div>
   )
 }

@@ -1,201 +1,210 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
+import { useStatsStore } from '../store/statsStore'
+import { useThemeStore } from '../store/themeStore'
+import Card from '../components/Card'
+import Button from '../components/Button'
+import Header from '../components/Header'
+import BottomNavigation from '../components/BottomNavigation'
 
 const Profile: React.FC = () => {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const { stats, fetchStats, isLoading } = useStatsStore()
+  const { isDark, toggleTheme } = useThemeStore()
+
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
 
   const settings = [
-    { label: 'Уведомления', value: 'Включены', icon: '🔔' },
-    { label: 'Язык', value: 'Русский', icon: '🌐' },
-    { label: 'Тема', value: 'Светлая', icon: '🎨' },
-    { label: 'Звук', value: 'Включен', icon: '🔊' }
+    { 
+      icon: '🔔', 
+      label: 'Уведомления', 
+      action: () => {
+        // TODO: Реализовать настройки уведомлений
+        alert('Настройки уведомлений будут добавлены в следующей версии')
+      }
+    },
+    { 
+      icon: '🌙', 
+      label: isDark ? 'Светлая тема' : 'Тёмная тема', 
+      action: () => {
+        toggleTheme()
+      }
+    },
+    { 
+      icon: '🔒', 
+      label: 'Безопасность', 
+      action: () => {
+        // TODO: Реализовать настройки безопасности
+        alert('Настройки безопасности будут добавлены в следующей версии')
+      }
+    },
+    { 
+      icon: '💬', 
+      label: 'Поддержка', 
+      action: () => {
+        // TODO: Реализовать систему поддержки
+        alert('Система поддержки будет добавлена в следующей версии')
+      }
+    }
   ]
 
-  const userStats = [
-    { label: 'Дней в приложении', value: '12', icon: '📅' },
-    { label: 'Завершено упражнений', value: '15', icon: '✅' },
-    { label: 'Общее время', value: '2ч 30м', icon: '⏱️' },
-    { label: 'Серия дней', value: '5', icon: '🔥' }
+  // Используем реальную статистику или показываем загрузку
+  const userStats = stats ? [
+    { icon: '📊', label: 'Всего упражнений', value: stats.total_exercises_completed.toString() },
+    { icon: '⏱️', label: 'Время тренировок', value: `${Math.floor(stats.total_workout_time_minutes / 60)}ч ${stats.total_workout_time_minutes % 60}м` },
+    { icon: '🔥', label: 'Лучшая серия', value: `${stats.best_streak_days} дней` },
+    { icon: '⭐', label: 'Уровень', value: `Уровень ${stats.level}` }
+  ] : [
+    { icon: '📊', label: 'Всего упражнений', value: '...' },
+    { icon: '⏱️', label: 'Время тренировок', value: '...' },
+    { icon: '🔥', label: 'Лучшая серия', value: '...' },
+    { icon: '⭐', label: 'Уровень', value: '...' }
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-md mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-800">Профиль</h1>
-            <button 
-              onClick={() => navigate('/profile')}
-              className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-sm font-medium"
-              title="Профиль"
-            >
-              👤
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen pb-20" style={{ backgroundColor: 'var(--page-bg)' }}>
+      <Header title="Профиль" />
 
       <div className="max-w-md mx-auto p-4 space-y-6">
         {/* User Profile Card */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6">
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-              {user?.email?.[0]?.toUpperCase() || 'U'}
+        <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-10 rounded-full translate-y-12 -translate-x-12"></div>
+          <div className="relative z-10 text-center">
+            <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+              <span className="text-3xl font-bold">👤</span>
             </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold">{user?.email || 'Пользователь'}</h2>
-              <p className="text-indigo-100 text-sm">Активный пользователь FaceFit</p>
-              <div className="flex items-center mt-2 space-x-2">
-                <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">⭐ Новичок</span>
-                <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">🔥 5 дней</span>
-              </div>
+            <h2 className="text-xl font-bold mb-2">{user?.email || 'Пользователь'}</h2>
+            <p className="text-indigo-100 text-sm">Активный участник FaceFit</p>
+            <div className="mt-4 inline-flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm backdrop-blur-sm">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span>Онлайн</span>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* User Statistics */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">📊 Ваша статистика</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {userStats.map((stat, index) => (
-              <div key={index} className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="text-2xl mb-1">{stat.icon}</div>
-                <div className="text-lg font-bold text-gray-800">{stat.value}</div>
-                <div className="text-xs text-gray-600">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Card className="border-l-4 border-l-blue-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#3b82f6'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>📊</span>
+            Статистика
+          </h3>
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="text-2xl mb-2">⏳</div>
+              <p style={{ color: 'var(--text-secondary)' }}>Загружаем статистику...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {userStats.map((stat, index) => (
+                <div key={index} className="rounded-lg p-3 text-center shadow-sm" style={{ 
+                  backgroundColor: 'var(--card-bg)',
+                  border: '1px solid var(--card-border)'
+                }}>
+                  <div className="text-2xl mb-1">{stat.icon}</div>
+                  <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{stat.value}</div>
+                  <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">⚡ Быстрые действия</h3>
-          <div className="space-y-3">
-            <button 
+        <Card className="border-l-4 border-l-green-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#10b981'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>⚡</span>
+            Быстрые действия
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Button 
               onClick={() => navigate('/exercises')}
-              className="w-full flex items-center justify-between p-3 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+              variant="outline"
+              className="flex flex-col items-center p-4 h-auto hover:bg-indigo-50 border-indigo-200 text-indigo-700 hover:text-indigo-800"
+              style={{ backgroundColor: 'var(--card-bg)' }}
             >
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">📋</span>
-                <span className="font-medium text-indigo-800">Начать тренировку</span>
-              </div>
-              <span className="text-indigo-600">→</span>
-            </button>
-            <button 
+              <div className="text-2xl mb-2">🏃‍♀️</div>
+              <span className="text-sm font-medium">Тренировка</span>
+            </Button>
+            
+            <Button 
               onClick={() => navigate('/progress')}
-              className="w-full flex items-center justify-between p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+              variant="outline"
+              className="flex flex-col items-center p-4 h-auto hover:bg-green-50 border-green-200 text-green-700 hover:text-green-800"
+              style={{ backgroundColor: 'var(--card-bg)' }}
             >
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">📈</span>
-                <span className="font-medium text-green-800">Посмотреть прогресс</span>
-              </div>
-              <span className="text-green-600">→</span>
-            </button>
+              <div className="text-2xl mb-2">📊</div>
+              <span className="text-sm font-medium">Прогресс</span>
+            </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Settings */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">⚙️ Настройки</h3>
-          <div className="space-y-4">
-            {settings.map((setting, index) => (
-              <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
-                <div className="flex items-center space-x-3">
-                  <span className="text-xl">{setting.icon}</span>
-                  <span className="text-gray-700 font-medium">{setting.label}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-gray-500 text-sm">{setting.value}</span>
-                  <span className="text-gray-400">→</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Support Section */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">🆘 Поддержка</h3>
+        <Card className="border-l-4 border-l-purple-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#8b5cf6'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>⚙️</span>
+            Настройки
+          </h3>
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">❓</span>
-                <span className="text-gray-700">Часто задаваемые вопросы</span>
-              </div>
-              <span className="text-gray-400">→</span>
-            </button>
-            <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">📧</span>
-                <span className="text-gray-700">Связаться с поддержкой</span>
-              </div>
-              <span className="text-gray-400">→</span>
-            </button>
-            <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">⭐</span>
-                <span className="text-gray-700">Оценить приложение</span>
-              </div>
-              <span className="text-gray-400">→</span>
-            </button>
-          </div>
-        </div>
-
-        {/* About */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-800 mb-4">ℹ️ О приложении</h3>
-          <div className="space-y-2 text-sm text-gray-600">
-            <div className="flex justify-between">
-              <span>Версия</span>
-              <span>1.0.0</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Дата обновления</span>
-              <span>Январь 2024</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Размер</span>
-              <span>15.2 МБ</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Logout Button */}
-        <button 
-          onClick={logout}
-          className="w-full py-4 px-6 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all"
-        >
-          🚪 Выйти из аккаунта
-        </button>
-      </div>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-3 z-50">
-        <div className="max-w-md mx-auto">
-          <div className="flex justify-around">
-            {[
-              { icon: '🏠', label: 'Домой', path: '/' },
-              { icon: '📊', label: 'Прогресс', path: '/progress' },
-              { icon: '📋', label: 'Упражнения', path: '/exercises' },
-              { icon: '👤', label: 'Профиль', path: '/profile', active: true }
-            ].map((item, index) => (
-              <button 
+            {settings.map((setting, index) => (
+              <button
                 key={index}
-                onClick={() => navigate(item.path)}
-                className={`flex flex-col items-center py-2 px-4 rounded-xl transition-all duration-200 ${
-                  item.active ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50'
-                }`}
+                onClick={setting.action}
+                className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-purple-50 transition-colors text-left shadow-sm"
+                style={{ backgroundColor: 'var(--card-bg)' }}
               >
-                <div className="text-xl mb-1">{item.icon}</div>
-                <span className="text-xs font-medium">{item.label}</span>
+                <span className="text-xl">{setting.icon}</span>
+                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{setting.label}</span>
+                <svg className="w-4 h-4 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             ))}
           </div>
-        </div>
-      </nav>
+        </Card>
+
+        {/* About */}
+        <Card className="border-l-4 border-l-gray-500" style={{ 
+          background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)',
+          borderLeftColor: '#6b7280'
+        }}>
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <span className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: 'var(--bg-primary)' }}>ℹ️</span>
+            О приложении
+          </h3>
+          <div className="text-center text-sm space-y-2" style={{ color: 'var(--text-secondary)' }}>
+            <p>FaceFit v1.0.0</p>
+            <p>Приложение для тренировки мышц лица</p>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>© 2024 FaceFit Team</p>
+          </div>
+        </Card>
+
+        {/* Logout Button */}
+        <Button 
+          onClick={logout}
+          variant="danger"
+          size="lg"
+          fullWidth
+          className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-lg"
+        >
+          🚪 Выйти из аккаунта
+        </Button>
+      </div>
+
+      <BottomNavigation />
     </div>
   )
 }
