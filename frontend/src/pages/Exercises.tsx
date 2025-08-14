@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useStatsStore } from '../store/statsStore'
 import Card from '../components/Card'
 import Button from '../components/Button'

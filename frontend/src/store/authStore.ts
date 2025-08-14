@@ -84,8 +84,6 @@ export const useAuthStore = create<AuthState>()(
             throw new Error(error.detail || 'Registration failed')
           }
 
-          const userData = await response.json()
-          
           // После регистрации автоматически логинимся
           await get().login(email, password)
         } catch (error) {
