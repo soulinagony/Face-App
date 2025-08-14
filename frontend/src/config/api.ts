@@ -2,7 +2,7 @@
 export const API_CONFIG = {
   // Локальная разработка
   development: {
-    baseURL: 'http://localhost:8000',
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
     supabaseURL: import.meta.env.VITE_SUPABASE_URL,
     supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY
   },

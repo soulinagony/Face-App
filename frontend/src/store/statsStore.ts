@@ -30,7 +30,7 @@ interface StatsStore {
   resetDailyStats: () => Promise<void>
 }
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export const useStatsStore = create<StatsStore>((set, get) => ({
   stats: null,
