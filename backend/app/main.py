@@ -8,7 +8,7 @@ app = FastAPI(title="FaceFit API", description="API для приложения 
 # Получаем порт из переменной окружения Railway
 PORT = int(os.getenv("PORT", 8000))
 
-# CORS middleware для frontend
+# CORS middleware для frontend - Railway restart required
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
