@@ -1,2 +1,4 @@
 *
-!.dockerignore 
+!.dockerignore
+!main.py
+!requirements.txt 
