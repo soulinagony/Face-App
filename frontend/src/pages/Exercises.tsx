@@ -80,7 +80,6 @@ const exercises: Exercise[] = [
 ]
 
 const Exercises: React.FC = () => {
-  const navigate = useNavigate()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null)
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
@@ -173,13 +172,7 @@ const Exercises: React.FC = () => {
     }
   }
 
-  const handleExerciseSelect = (exercise: Exercise) => {
-    setSelectedExercise(exercise)
-    setCurrentExerciseIndex(exercises.findIndex(ex => ex.id === exercise.id))
-    setTimeLeft(exercise.duration)
-    setIsCompleted(false)
-    setIsVideoPlaying(false)
-  }
+
 
   const handleBackClick = () => {
     setSelectedExercise(null)

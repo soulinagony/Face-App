@@ -9,14 +9,10 @@ import BottomNavigation from '../components/BottomNavigation'
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
-  const [currentTime, setCurrentTime] = useState(new Date())
   const { user } = useAuthStore()
-  const { stats, fetchStats, isLoading } = useStatsStore()
+  const { stats, fetchStats } = useStatsStore()
   
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
-    return () => clearInterval(timer)
-  }, [])
+
 
   useEffect(() => {
     if (user) {

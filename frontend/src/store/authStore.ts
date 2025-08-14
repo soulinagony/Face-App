@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { signInWithGoogle, signInWithApple } from '../lib/supabase'
+// import { signInWithGoogle, signInWithApple } from '../lib/supabase'
 
 export interface User {
   id: number
@@ -146,12 +146,8 @@ export const useAuthStore = create<AuthState>()(
       loginWithGoogle: async () => {
         set({ isLoading: true })
         try {
-          const { data, error } = await signInWithGoogle()
-          if (error) throw error
-          
-          // После успешной OAuth авторизации через Supabase
-          // нужно будет интегрировать с нашим backend
-          console.log('Google OAuth success:', data)
+          // TODO: Implement Google OAuth
+          console.log('Google OAuth not implemented yet')
         } catch (error) {
           console.error('Google login error:', error)
           throw error
@@ -163,12 +159,8 @@ export const useAuthStore = create<AuthState>()(
       loginWithApple: async () => {
         set({ isLoading: true })
         try {
-          const { data, error } = await signInWithApple()
-          if (error) throw error
-          
-          // После успешной OAuth авторизации через Supabase
-          // нужно будет интегрировать с нашим backend  
-          console.log('Apple OAuth success:', data)
+          // TODO: Implement Apple OAuth
+          console.log('Apple OAuth not implemented yet')
         } catch (error) {
           console.error('Apple login error:', error)
           throw error
