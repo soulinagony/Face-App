@@ -1,14 +1,11 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import QueuePool
 from app.models import Base
+from app.core.config import settings
 
-# В продакшене следует использовать переменные окружения
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "postgresql://postgres.nqhzvnagozjgsxwkatmg:Cdtiybrjd_77@aws-0-eu-north-1.pooler.supabase.com:5432/postgres"
-)
+# Используем переменные окружения из конфигурации
+DATABASE_URL = settings.DATABASE_URL
 
 # Настройки пула соединений для стабильности
 engine = create_engine(
