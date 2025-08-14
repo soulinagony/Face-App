@@ -35,7 +35,7 @@ postgresql://postgres.your-project-id:[YOUR_PASSWORD]@aws-0-eu-north-1.pooler.su
 
 #### Session pooler
 ```
-postgresql://postgres.your-project-id:[YOUR_PASSWORD]@aws-0-eu-north-1.pooler.supabase.com:5432/postgres
+postgresql://postgres.your-project-id:[YOUR_PASSWORD]@aws-0-eu-north-1.pooler.supabase.com:6543/postgres
 ```
 
 ---
