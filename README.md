@@ -35,20 +35,16 @@ npm install
 npm run dev
 ```
 
-## 🌐 Деплой на Vercel
+## 🌐 Деплой
 
-### Экспресс-деплой (5 минут)
-```bash
-cd frontend
-npm install -g vercel
-vercel login
-vercel
-```
+### Railway (Backend)
+- Автоматический деплой из GitHub
+- Backend работает на Railway
+- База данных Supabase
 
-### Подробные инструкции
-- `instructions/QUICK_DEPLOY.md` - Быстрый деплой
-- `instructions/DEPLOY.md` - Подробный деплой
-- `instructions/SECURITY.md` - Безопасность
+### Vercel (Frontend)
+- Экспресс-деплой за 5 минут
+- Подробные инструкции в `instructions/`
 
 ## 📁 Структура проекта
 
@@ -80,15 +76,16 @@ API_PORT=8000
 
 ## 📱 Демо
 
-После деплоя на Vercel получите URL для демонстрации:
+После деплоя на Railway получите URL для backend:
 ```
-https://your-app.vercel.app
+https://your-app.railway.app
 ```
 
 ## 🆘 Поддержка
 
 - **Безопасность**: `instructions/SECURITY.md`
 - **Деплой**: `instructions/DEPLOY.md`
+- **Railway**: `instructions/RAILWAY_DEPLOY.md`
 - **Быстрый старт**: `instructions/QUICK_DEPLOY.md`
 
 ---
